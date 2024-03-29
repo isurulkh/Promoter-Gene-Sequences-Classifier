@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E.Coli Prediction through Genome</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #282c34;
+            background-image: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: #ffffff;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .container {
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            transition: transform 0.2s ease-in-out;
+        }
+
+        .container:hover {
+            transform: scale(1.02);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            outline: none;
+            color: #333;
+            font-size: 16px;
+            background: #fff;
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"]:focus {
+            box-shadow: 0 4px 10px rgba(255, 69, 0, 0.5);
+        }
+
+        .searchButton {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            background-color: #ff416c;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 500;
+            transition: background-color 0.3s ease-in-out, transform 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+        }
+
+        .searchButton:hover {
+            background-color: #ff4b2b;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 69, 0, 0.5);
+        }
+
+        .searchButton i {
+            margin-right: 8px;
+        }
+
+        h2 {
+            margin-top: 30px;
+            font-weight: 600;
+        }
+
+        small {
+            display: block;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #ccc;
+        }
+
+        /* Dark Mode Styles */
+        body.dark-mode {
+            background-color: #121212;
+            background-image: none;
+            color: #ffffff;
+        }
+
+        /* Dark Mode Toggle Styles */
+        .theme-switch-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        .theme-switch {
+            display: inline-block;
+            height: 34px;
+            position: relative;
+            width: 60px;
+        }
+
+        .theme-switch input {
+            display:none;
+        }
+
+        .slider {
+            background-color: #ccc;
+            bottom: 0;
+            cursor: pointer;
+            left: 0;
+            position: absolute;
+            right: 0;
+            top: 0;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            background-color: #fff;
+            bottom: 4px;
+            content: "";
+            height: 26px;
+            left: 4px;
+            position: absolute;
+            transition: .4s;
+            width: 26px;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #66bb6a;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Dark Mode Toggle -->
+    <div class="theme-switch-wrapper">
+        <label class="theme-switch" for="checkbox">
+            <input type="checkbox" id="checkbox" />
+            <div class="slider round"></div>
+        </label>
+        <em>Enable Dark Mode!</em>
+    </div>
+    
+    <form method="post" action="" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="genomeInput" class="form-label">Type the genome here:</label>
+            <input id="genomeInput" name="Name" type="text" placeholder="e.g., ttaacattaataaataaggaggctctaatggcactcattagccaatcaatcaagaac">
+            <small>Example: ttactagcaatacgcttgcgttcggtggttaagtatgtataatgcgcgggcttgtcg</small>
+        </div>
+        <button type="submit" name="pred_button" class="searchButton">
+            <i class="fas fa-dna"></i>Submit
+        </button>
+    </form>
+    <div>
+        {% if response %}
+            <h2>The person has E.Coli: {{ response }}</h2>
+        {% else %}
+            <h2>The prediction result will appear here.</h2>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+    const toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
+    const currentTheme = localStorage.getItem('theme');
+
+    if (currentTheme) {
+        document.body.classList.toggle('dark-mode', currentTheme === 'dark');
+        toggleSwitch.checked = currentTheme === 'dark';
+    }
+
+    function switchTheme(e) {
+        if (e.target.checked) {
+            document.body.classList.add("dark-mode");
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.body.classList.remove("dark-mode");
+            localStorage.setItem('theme', 'light');
+        }
+    }
+
+    toggleSwitch.addEventListener('change', switchTheme, false);
+</script>
+</body>
+</html>
