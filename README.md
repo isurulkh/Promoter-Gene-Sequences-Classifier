@@ -16,7 +16,7 @@ Before you begin, ensure you have the following installed:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/isurulkh/AI-Powered-Resume-Analyzer-and-Job-Application-Assistant.git
+   https://github.com/isurulkh/Promoter-Gene-Sequences-Classifier.git
 2.**Create a virtual environment:**
 
   ```bash
